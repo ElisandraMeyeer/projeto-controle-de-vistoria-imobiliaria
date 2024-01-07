@@ -4,25 +4,29 @@
         <h2>Controle de vistorias</h2>
     </div>
 
+    {{ dados }}
+    {{ listaComodos }}
+
     <div class="mb-3 shadow-sm p-3 bg-body-tertiary rounded">
         <div class="pb-2">
             <h5>Dados do imóvel</h5>
         </div>
         <div class="pb-4">
             <label for="formGroupExampleInput2" class="form-label mx-2">Tipo imóvel: </label>
-            <Dropdown v-model="dados.imovel" :options="tipoImovel" showClear placeholder="Selecione um cômodo" class="w-full inline" />
+            <Dropdown v-model="dados.imovel" :options="tipoImovel" option-label="nome"  filter showClear placeholder="Selecione tipo de imóvel" class="w-full inline" />
         </div>
 
         <div class="mb-3">
-            <!-- separar por rua, cidade... -->
             <label for="exampleFormControlInput1" class="form-label">Endereço do imóvel</label>
-            <!-- <input type="text" class="form-control" > -->
             <div class="row">
                 <div class="col">
                     <input type="text" class="form-control" placeholder="Rua" v-model="dados.rua">
                 </div>
                 <div class="col">
                     <input type="text" class="form-control" placeholder="Número" v-model="dados.numero">
+                </div>
+                <div class="col"  v-show="apartamento">
+                    <input type="text" class="form-control" placeholder="Bloco - N° Apto" v-model="dados.apto">
                 </div>
                 <div class="col">
                     <input type="text" class="form-control" placeholder="Bairro" v-model="dados.bairro">
@@ -132,13 +136,15 @@
         <ModalAdicionarComodo v-model:visible="visible" @close="visible = false" @adicionar-comodo="adicionarComodo" />
     </div>
 
-    <button class="w-100 btn btn-secondary btn-lg" style="margin-top: 6rem;" @click="teste()" type="submit">Continue
-        to checkout</button>
+    <!-- <button class="w-100 btn btn-secondary btn-lg" style="margin-top: 6rem;" @click="teste()" type="submit">Continue
+        to checkout</button> -->
 
-    <footer class="my-5 pt-5 text-body-secondary text-center text-small">
+        <router-link class="w-100 btn btn-secondary btn-lg" style="margin-top: 6rem;" :to="{ name: 'relatorio', params: { dados: encodeURIComponent(JSON.stringify(this.dados)) }}" >Gerar documento de vistoria</router-link>
+        <footer class="my-5 pt-5 text-body-secondary text-center text-small">
         <p class="mb-1">&copy; 2023 Elisandra Meyer</p>
     </footer>
 </div>
+
 </template>
 
 <script>
@@ -174,6 +180,7 @@ export default {
                 imovel: null,
                 rua: null,
                 numero: null,
+                apto: null,
                 bairro: null,
                 cidade: null,
                 estado: null,
@@ -190,30 +197,27 @@ export default {
                 pintura: null,
             },
             visible: false,
-            comodos: [
-                'Quarto',
-                'Cozinha',
-                'Sala',
-                'Banheiro',
-                'Sacada',
-                'Pátio',
-                'Entrada',
-                'Garagem',
-                'Área de Serviço',
-                'Copa',
-                'Corredor',
-                'Escadas',
-                'Closet'
-            ],
             tipoImovel: [
-                'Apartamento',
-                'Galpão',
-                'Casa',
-                'Chácara',
-                'Kitinete',
-                'Sala comercial',
-                'Terreno'
-            ],
+                { nome: 'Apartamento' },
+                { nome: 'Bangalô' },
+                { nome: 'Casa' },
+                { nome: 'Casa de Campo' },
+                { nome: 'Casa de Praia' },
+                { nome: 'Chácara' },
+                { nome: 'Cobertura' },
+                { nome: 'Duplex' },
+                { nome: 'Estúdio' },
+                { nome: 'Fazenda' },
+                { nome: 'Flat' },
+                { nome: 'Galpão' },
+                { nome: 'Kitinete' },
+                { nome: 'Loteamento' },
+                { nome: 'Loft' },
+                { nome: 'Penthouse' },
+                { nome: 'Sala comercial' },
+                { nome: 'Terreno' },
+                { nome: 'Triplex' }
+            ],      
             situacao: [
                 'Ligada',
                 'Desligada',
@@ -230,14 +234,20 @@ export default {
             this.$router.push({
                 name: 'relatorio',
                 params: {
-                    nome: this.dados
+                    dados: this.dados
                 }
             })
         },
         adicionarComodo(comodo) {
             this.listaComodos.push(comodo);
+            this.dados.listaComodos = this.listaComodos;
             console.log(this.listaComodos);
         },
+    },
+    computed: {
+        apartamento(){
+            return this.dados.imovel == "Apartamento";
+        }
     },
 }
 </script>

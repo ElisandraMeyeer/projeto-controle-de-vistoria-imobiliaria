@@ -11,10 +11,14 @@ const router = createRouter({
       component: Formulario
     },
     {
-      path: '/relatorio/:nome',
+      path: '/relatorio/:dados',
       name: 'relatorio',
       component: Relatorio,
-      props: true
+      props: true,
+      beforeEnter: (to, from, next) => {
+        to.params.dados = JSON.parse(decodeURIComponent(to.params.dados));
+        next();
+      },
     },
   ]
 })
