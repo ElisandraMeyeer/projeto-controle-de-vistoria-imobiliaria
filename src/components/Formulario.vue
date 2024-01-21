@@ -4,9 +4,6 @@
         <h2>Controle de vistorias</h2>
     </div>
 
-    {{ dados }}
-    {{ listaComodos }}
-
     <div class="mb-3 shadow-sm p-3 bg-body-tertiary rounded">
         <div class="pb-2">
             <h5>Dados do imóvel</h5>
@@ -53,14 +50,13 @@
             </div>
         </div>
         <div class="mb-3">
-            <label class="form-label">Responsável</label>
-            <input type="text" class="form-control" v-model="dados.responsavel">
+            <label class="form-label">Nome do Locatário:</label>
+            <input type="text" class="form-control" v-model="dados.locatario">
         </div>
         <div class="mb-3">
-            <label class="form-label">Anotações</label>
-            <textarea class="form-control" v-model="dados.anotacoes" rows="3"></textarea>
+            <label class="form-label">CPF do Locatário:</label>
+            <input type="text" class="form-control" v-model="dados.cpfLocatario">
         </div>
-
     </div>
 
     <div class="shadow-sm p-3 mb-5 bg-body-tertiary rounded">
@@ -93,7 +89,7 @@
                     <label for="inputPassword6" class="col-form-label">Leitura energia: </label>
                 </div>
                 <div class="col-auto">
-                    <input type="text" class="form-control">
+                    <input type="text" v-model="dados.leituraEnergia" class="form-control">
                 </div>
             </div>
 
@@ -103,7 +99,6 @@
                 </div>
                 <div class="col-auto">
                     <Dropdown v-model="dados.situacaoEnergia" :options="situacao" showClear placeholder="Selecione" class="w-full inline" />
-
                 </div>
             </div>
         </div>
@@ -125,13 +120,17 @@
             <label class="form-label">Pintura: </label>
             <input type="text" class="form-control" v-model="dados.pintura">
         </div>
+        <div class="mb-3">
+            <label class="form-label">Outras observações gerais: </label>
+            <input type="text" class="form-control" v-model="dados.observaçõesGerais">
+        </div>
     </div>
 
     <div class="shadow-sm p-3 mb-5 mt-3 bg-body-tertiary rounded">
         <div class="pb-3">
             <h5>Cômodos:</h5>
         </div>
-        <Listbox v-model="comodo" :options="listaComodos" optionLabel="tipo" emptyMessage="Nenhum cômodo adicionado" class="mb-4" />
+        <Listbox v-model="comodo" :options="listaComodos" optionLabel="tipo.nome" emptyMessage="Nenhum cômodo adicionado" class="mb-4" />
         <Button label="Adicionar cômodo" icon="pi pi-plus" style="background-color: var(--surface-500); border: black;" @click="visible = true" />
         <ModalAdicionarComodo v-model:visible="visible" @close="visible = false" @adicionar-comodo="adicionarComodo" />
     </div>
@@ -186,6 +185,8 @@ export default {
                 estado: null,
                 cep: null,
                 data: new Date(),
+                locatario: null,
+                cpfLocatario: null,
                 responsavel: null,
                 anotacoes: null,
                 leituraAgua: null,
@@ -195,6 +196,7 @@ export default {
                 faxina: null,
                 entulhos: null,
                 pintura: null,
+                observaçõesGerais: null,
             },
             visible: false,
             tipoImovel: [
@@ -246,7 +248,9 @@ export default {
     },
     computed: {
         apartamento(){
-            return this.dados.imovel == "Apartamento";
+            if(this.dados.imovel){
+                return this.dados.imovel.nome == "Apartamento";
+            }
         }
     },
 }

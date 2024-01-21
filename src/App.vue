@@ -15,9 +15,17 @@ export default {
     };
   },
   methods: {
-
+    exibirMensagemAntesDeRecarregar(event) {
+      const mensagem = "Você tem alterações não salvas. Tem certeza que deseja sair?";
+      event.returnValue = mensagem;
+      return mensagem;
+    },
   },
   mounted() {
+    window.addEventListener('beforeunload', this.exibirMensagemAntesDeRecarregar);
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.exibirMensagemAntesDeRecarregar);
   },
 
 }
