@@ -10,23 +10,23 @@
         </div>
         <div class="pb-4">
             <label for="formGroupExampleInput2" class="form-label mx-2">Tipo imóvel: </label>
-            <Dropdown v-model="dados.imovel" :options="tipoImovel" option-label="nome"  filter showClear placeholder="Selecione tipo de imóvel" class="w-full inline" />
+            <Dropdown v-model="dados.imovel" :options="tipoImovel" option-label="nome"  filter showClear @blur="salva(dados.imovel, 'imovel')" placeholder="Selecione tipo de imóvel" class="w-full inline" />
         </div>
 
         <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Endereço do imóvel</label>
             <div class="row">
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Rua" v-model="dados.rua">
+                    <input type="text" class="form-control" placeholder="Rua" @blur="salva(dados.rua, 'rua')" v-model="dados.rua">
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Número" v-model="dados.numero">
+                    <input type="text" class="form-control" placeholder="Número" @blur="salva(dados.numero, 'numero')" v-model="dados.numero">
                 </div>
                 <div class="col"  v-show="apartamento">
-                    <input type="text" class="form-control" placeholder="Bloco - N° Apto" v-model="dados.apto">
+                    <input type="text" class="form-control" placeholder="Bloco - N° Apto" @blur="salva(dados.apto, 'apto')" v-model="dados.apto">
                 </div>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="Bairro" v-model="dados.bairro">
+                    <input type="text" class="form-control" placeholder="Bairro" @blur="salva(dados.bairro, 'bairro')" v-model="dados.bairro">
                 </div>
 
             </div>
@@ -130,7 +130,7 @@
         <div class="pb-3">
             <h5>Cômodos:</h5>
         </div>
-        <Listbox v-model="comodo" :options="listaComodos" optionLabel="tipo.nome" emptyMessage="Nenhum cômodo adicionado" class="mb-4" />
+        <Listbox v-model="comodo" :options="dados.listaComodos" optionLabel="tipo.nome" emptyMessage="Nenhum cômodo adicionado" class="mb-4" />
         <Button label="Adicionar cômodo" icon="pi pi-plus" style="background-color: var(--surface-500); border: black;" @click="visible = true" />
         <ModalAdicionarComodo v-model:visible="visible" @close="visible = false" @adicionar-comodo="adicionarComodo" />
     </div>
@@ -139,6 +139,7 @@
         to checkout</button> -->
 
         <router-link class="w-100 btn btn-secondary btn-lg" style="margin-top: 6rem;" :to="{ name: 'relatorio', params: { dados: encodeURIComponent(JSON.stringify(this.dados)) }}" >Gerar documento de vistoria</router-link>
+        <button @click="limpar()">Limpar formulário</button>
         <footer class="my-5 pt-5 text-body-secondary text-center text-small">
         <p class="mb-1">&copy; 2023 Elisandra Meyer</p>
     </footer>
@@ -187,7 +188,6 @@ export default {
                 data: new Date(),
                 locatario: null,
                 cpfLocatario: null,
-                responsavel: null,
                 anotacoes: null,
                 leituraAgua: null,
                 situacaoAgua: null,
@@ -243,8 +243,23 @@ export default {
         adicionarComodo(comodo) {
             this.listaComodos.push(comodo);
             this.dados.listaComodos = this.listaComodos;
+            this.salva(this.listaComodos, "comodos")
             console.log(this.listaComodos);
         },
+        salva(dado, campo){
+            const tipoDado = typeof dado;
+            if(tipoDado=="object"){
+                localStorage.setItem(campo, JSON.stringify(dado))
+                return;
+            }
+            if(dado){
+                localStorage.setItem(campo, dado) 
+            }
+        },
+        limpar(){
+            localStorage.clear();
+            this.dados = {};
+        }
     },
     computed: {
         apartamento(){
@@ -252,6 +267,14 @@ export default {
                 return this.dados.imovel.nome == "Apartamento";
             }
         }
+    },
+    mounted() {
+        this.dados.imovel = JSON.parse(localStorage.getItem("imovel"))
+        this.dados.rua = localStorage.getItem("rua")
+        this.dados.numero = localStorage.getItem("numero")
+        this.dados.apto = localStorage.getItem("apto")
+        this.dados.bairro = localStorage.getItem("bairro")
+        this.dados.listaComodos = JSON.parse(localStorage.getItem("comodos"))
     },
 }
 </script>
