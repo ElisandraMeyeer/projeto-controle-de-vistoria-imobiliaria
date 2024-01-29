@@ -1,14 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Formulario from '@/components/Formulario.vue'
 import Relatorio from '@/components/Relatorio.vue'
+import Grid from '@/components/Grid.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/formulario/',
       name: 'formulario',
-      component: Formulario
+      component: Formulario,
+      props: true,
+      // beforeEnter: (to, from, next) => {
+      //   to.params.teste = to.params.teste;
+      //   next();
+      // },
     },
     {
       path: '/relatorio/:dados',
@@ -19,6 +25,11 @@ const router = createRouter({
         to.params.dados = JSON.parse(decodeURIComponent(to.params.dados));
         next();
       },
+    },
+    {
+      path: '/',
+      name: 'grid',
+      component: Grid,
     },
   ]
 })
